@@ -80,7 +80,7 @@ function connectDB() {
 	mongoose.connect(databaseUrl);
 	database = mongoose.connection;
 
-	databse.on('error', console.error.bind(console, 'mongoose connection error'));
+	database.on('error', console.error.bind(console, 'mongoose connection error'));
 	database.on('open', function() {
 		console.log('데이터베이스에 연결되었습니다. : ' + databaseUrl);
 
@@ -104,7 +104,7 @@ function createUserSchema() {
 	UserSchema = mongoose.Schema({
 		id : {type: String, required: true, unique : true, 'default':''},
 		hashed_password : {type:String, required:true, 'default':''},
-		salt : {type:String, require: true},
+		salt : {type:String, required: true},
 		name : {type: String, index : 'hashed', 'default':''},
 		age : {type:Number, 'default':-1},
 		created_at : {type:Date, index: {unique: false}, 'default': Date.now},
@@ -114,8 +114,8 @@ function createUserSchema() {
 	// password를 virtual 메소드로 정의 : MongoDB에 저장되지 않는 가상 속성임
 	// 특정 속성을 지정하고 set, get 메소드를 정의함
 	UserSchema
-		.virtual('password'),
-		set(function(password) {
+		.virtual('password')
+		.set(function(password) {
 			this._password = password;
 			this.salt = this.makeSalt();
 			this.hashed_password = this.encryptPassword(password);
@@ -143,13 +143,14 @@ function createUserSchema() {
 	UserSchema.method('authenticate', function(plainText, inSalt, hashed_password) {
 		if (inSalt) {
 			console.log('authenticate 호출됨 : %s -> %s : %s', plainText, this.encryptPassword(plainText, inSalt), hashed_password);
+			return this.encryptPassword(plainText, inSalt) === hashed_password;
 		} else {
 			console.log('authenticate 호출됨 : %s -> %s : %s', plainText, this.encryptPassword(plainText), this.hashed_password);
 			return this.encryptPassword(plainText) === this.hashed_password;
 		}
 	});
 
-	// 값이 유효한지 확인하는 ㅎ마수 정의
+	// 값이 유효한지 확인하는 함수 정의
 	var validatePresenceOf = function(value) {
 		return value && value.length;
 	}
@@ -316,7 +317,7 @@ router.route('/process/listuser').post(function(req, res) {
 	// 데이터베이스 객체가 초기화된 경우, 모델 객체의 findAll 메소드 호출
 	if (database) {
 		// 1. 모든 사용자 검색
-		UserModel.findAll(function(err, result) {
+		UserModel.findAll(function(err, results) {
 			// 에러 발생시, 클라이언트로 에러 전송
 			if (err) {
 				console.error('사용자 리스트 조회 중 에러 발생 : ' + err.stack);
