@@ -60,10 +60,10 @@ app.set('port', process.env.PORT || 3000);
  
 
 // body-parser를 이용해 application/x-www-form-urlencoded 파싱
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // body-parser를 이용해 application/json 파싱
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 // public 폴더를 static으로 오픈
 app.use('/public', static(path.join(__dirname, 'public')));
