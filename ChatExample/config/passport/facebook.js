@@ -1,5 +1,3 @@
-import { callbackify } from 'util';
-
 /**
  * 패스포트 설정 파일
  * 
