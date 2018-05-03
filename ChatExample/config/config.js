@@ -26,4 +26,4 @@
 		clientSecret: 'secret',
 		callbackURL: '/auth/google/callback'
     }
- }
+ };
